@@ -1,5 +1,8 @@
 module.exports = function( grunt ) {
   'use strict';
+
+  // grunt.loadNpmTasks('grunt-contrib-less');
+
   //
   // Grunt configuration:
   //
@@ -9,6 +12,14 @@ module.exports = function( grunt ) {
 
     // Project configuration
     // ---------------------
+
+    /*less: {
+      development: {
+        files: {
+          "app/styles/bootstrap.css": "app/components/bootstrap/less/bootstrap.less" 
+        }
+      }
+    },*/
 
     // specify an alternate install location for Bower
     bower: {
@@ -31,7 +42,7 @@ module.exports = function( grunt ) {
         // http://compass-style.org/help/tutorials/configuration-reference/#configuration-properties
         options: {
           css_dir: 'temp/styles',
-          sass_dir: 'app/styles',
+          sass_dir: ['app/styles', 'app/components/bootstrap/lib'],
           images_dir: 'app/images',
           javascripts_dir: 'temp/scripts',
           force: true
@@ -48,7 +59,7 @@ module.exports = function( grunt ) {
     watch: {
       coffee: {
         files: 'app/scripts/**/*.coffee',
-        tasks: 'coffee reload'
+        tasks: 'coffee'
       },
       compass: {
         files: [
@@ -56,6 +67,12 @@ module.exports = function( grunt ) {
         ],
         tasks: 'compass reload'
       },
+      // less: {
+      //   files: [
+      //     'app/components/**/*.less'
+      //   ],
+      //   tasks: 'less reload'
+      // },
       reload: {
         files: [
           'app/*.html',

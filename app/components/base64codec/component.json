@@ -1,0 +1,13 @@
+{
+  "name": "base64codec",
+  "version": "0.0.0",
+  "main": "base64codec.js",
+  "dependencies": {},
+  "_id": "base64codec@0.0.0",
+  "readme": "ERROR: No README.md file found!",
+  "description": "ERROR: No README.md file found!",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/chick307/base64codec.git"
+  }
+}
