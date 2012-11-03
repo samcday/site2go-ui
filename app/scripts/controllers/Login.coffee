@@ -1,11 +1,11 @@
 'use strict'
 
 angular.module('site2goUiApp')
-  .controller 'LoginCtrl', ($scope, $q, $http, Base64) ->
-    console.log Base64
+  .controller 'LoginCtrl', ($scope, $rootScope, $q, $http, Base64) ->
+    $scope.loginFailed = false
     $scope.showLogin = false
-    $scope.$watch "loggedIn", (newValue, oldValue) ->
-      $scope.showLogin = newValue if newValue isnt oldValue
+    $rootScope.$watch "loggedIn", (newValue, oldValue) ->
+      $scope.showLogin = !newValue if newValue isnt oldValue
     $scope.login = ->
       ###
       $resource is a godawful mess atm, took all of this below to get a fucking
@@ -25,7 +25,14 @@ angular.module('site2goUiApp')
         console.log "oh."
         console.log arguments
       ###
-      promise = $http method: "GET", url: "http://localhost:9090/", headers: 
-        authorization: "Basic #{Base64.encodeUtf8("#{$scope.email}:#{$scope.password}")}"
-      promise.then null, ->
-        console.log "k .", arguments
+
+      $scope.loginFailed = false
+      $rootScope.authentication.user = $scope.email
+      $rootScope.authentication.pass = $scope.password
+
+      promise = $http.get "http://localhost:9090/", loginAttempt: true
+      promise.success ->
+        $rootScope.loggedIn = true
+      promise.error (data, status) ->
+        if status is 401
+          $scope.loginFailed = true

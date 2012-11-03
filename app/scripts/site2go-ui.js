@@ -2,13 +2,11 @@
   'use strict';
 
   angular.module('site2goUiApp', ['ui', 'ngResource']).config([
-    '$routeProvider', function($routeProvider) {
+    '$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
+      $httpProvider.responseInterceptors.push("loginResponseInterceptor");
       return $routeProvider.when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
-      }).when('/test', {
-        templateUrl: 'views/main.html',
-        controller: 'TestCtrl'
+        templateUrl: 'views/sites.html',
+        controller: 'SitesCtrl'
       }).otherwise({
         redirectTo: '/'
       });
@@ -40,6 +38,40 @@
     return RootResource;
   }).factory("Base64", function($window) {
     return $window.base64codec;
-  }).run(function($rootScope, $window) {});
+  }).factory("loginResponseInterceptor", function($rootScope, $q, $injector) {
+    return function(promise) {
+      var failure, success;
+      success = function(resp) {
+        return resp;
+      };
+      failure = function(response) {
+        var $http, deferred, watchRegistration;
+        console.log(response);
+        if (response.status === 401 && !response.config.loginAttempt) {
+          console.log("hijackin'");
+          $http = $injector.get("$http");
+          deferred = $q.defer();
+          $rootScope.loggedIn = false;
+          watchRegistration = $rootScope.$watch("loggedIn", function(newVal, oldVal) {
+            if (newVal) {
+              return deferred.resolve($http(response.config));
+            }
+          });
+          return deferred.promise;
+        }
+        return $q.reject(response);
+      };
+      return promise.then(success, failure);
+    };
+  }).run(function($rootScope, $http, Base64) {
+    $rootScope.loggedIn = null;
+    $rootScope.authentication = {};
+    return $http.defaults.transformRequest = function(data, headers) {
+      if ($rootScope.authentication.user && $rootScope.authentication.pass) {
+        headers().Authorization = "Basic " + (Base64.encodeUtf8("" + $rootScope.authentication.user + ":" + $rootScope.authentication.pass));
+      }
+      return data;
+    };
+  });
 
 }).call(this);

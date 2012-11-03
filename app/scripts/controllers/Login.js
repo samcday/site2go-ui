@@ -1,12 +1,12 @@
 (function() {
   'use strict';
 
-  angular.module('site2goUiApp').controller('LoginCtrl', function($scope, $q, $http, Base64) {
-    console.log(Base64);
+  angular.module('site2goUiApp').controller('LoginCtrl', function($scope, $rootScope, $q, $http, Base64) {
+    $scope.loginFailed = false;
     $scope.showLogin = false;
-    $scope.$watch("loggedIn", function(newValue, oldValue) {
+    $rootScope.$watch("loggedIn", function(newValue, oldValue) {
       if (newValue !== oldValue) {
-        return $scope.showLogin = newValue;
+        return $scope.showLogin = !newValue;
       }
     });
     return $scope.login = function() {
@@ -30,15 +30,19 @@
       */
 
       var promise;
-      promise = $http({
-        method: "GET",
-        url: "http://localhost:9090/",
-        headers: {
-          authorization: "Basic " + (Base64.encodeUtf8("" + $scope.email + ":" + $scope.password))
-        }
+      $scope.loginFailed = false;
+      $rootScope.authentication.user = $scope.email;
+      $rootScope.authentication.pass = $scope.password;
+      promise = $http.get("http://localhost:9090/", {
+        loginAttempt: true
       });
-      return promise.then(null, function() {
-        return console.log("k .", arguments);
+      promise.success(function() {
+        return $rootScope.loggedIn = true;
+      });
+      return promise.error(function(data, status) {
+        if (status === 401) {
+          return $scope.loginFailed = true;
+        }
       });
     };
   });

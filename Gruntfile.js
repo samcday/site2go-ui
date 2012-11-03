@@ -42,9 +42,10 @@ module.exports = function( grunt ) {
         // http://compass-style.org/help/tutorials/configuration-reference/#configuration-properties
         options: {
           css_dir: 'temp/styles',
-          sass_dir: ['app/styles', 'app/components/bootstrap/lib'],
+          sass_dir: 'app/styles',
           images_dir: 'app/images',
           javascripts_dir: 'temp/scripts',
+          config: '.compass.rb',  // added this
           force: true
         }
       }

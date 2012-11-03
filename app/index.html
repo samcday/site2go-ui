@@ -10,7 +10,6 @@
         <meta name="description" content=""/>
         <meta name="viewport" content="width=device-width"/>
         <link rel="stylesheet" href="styles/main.css"/>
-        <link rel="stylesheet" href="styles/bootstrap.css"/>
 
     </head>
     <body ng-app="site2goUiApp">
@@ -29,6 +28,9 @@
                 <h3>Login</h3>
             </div>
             <div class="modal-body">
+                <div class="alert alert-error" ng-show="loginFailed">
+                    <i class="icon-remove"></i> Invalid login details, please try again.
+                </div>
                 <form class="form-horizontal" name="loginForm" ng-submit="login()">
                     <div class="control-group">
                         <label class="control-label" for="login_email">Email Address:</label>
@@ -68,8 +70,8 @@
         <script src="scripts/vendor/angular-resource.js"></script>
         <script src="components/angular-ui/build/angular-ui.js"></script>
 
-        <script src="components/bootstrap/js/bootstrap-transition.js"></script>
-        <script src="components/bootstrap/js/bootstrap-modal.js"></script>
+        <script src="scripts/vendor/bootstrap/bootstrap-transition.js"></script>
+        <script src="scripts/vendor/bootstrap/bootstrap-modal.js"></script>
 
         <script src="components/base64codec/base64codec.js"></script>
 
@@ -78,7 +80,7 @@
         <script src="scripts/site2go-ui.js"></script>
         <script src="scripts/controllers/main.js"></script>
         <script src="scripts/controllers/Login.js"></script>
-        <script src="scripts/controllers/Test.js"></script>
+        <script src="scripts/controllers/Sites.js"></script>
         <!-- endbuild -->
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->

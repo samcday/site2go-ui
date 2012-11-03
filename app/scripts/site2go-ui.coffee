@@ -3,14 +3,12 @@
 
 
 angular.module('site2goUiApp', ['ui', 'ngResource'])
-  .config(['$routeProvider', ($routeProvider) ->
+  .config(['$routeProvider', '$httpProvider', ($routeProvider, $httpProvider) ->
+    $httpProvider.responseInterceptors.push "loginResponseInterceptor"
     $routeProvider
       .when '/',
-        templateUrl: 'views/main.html'
-        controller: 'MainCtrl'
-      .when '/test',
-        templateUrl: 'views/main.html'
-        controller: 'TestCtrl'
+        templateUrl: 'views/sites.html'
+        controller: 'SitesCtrl'
       .otherwise
         redirectTo: '/'
   ])
@@ -36,5 +34,30 @@ angular.module('site2goUiApp', ['ui', 'ngResource'])
   .factory("Base64", ($window) ->
     return $window.base64codec
   )
-  .run ($rootScope, $window) ->
-    # $rootScope.showLogin = true
+  .factory("loginResponseInterceptor", ($rootScope, $q, $injector) ->
+    return (promise) ->
+      success = (resp) -> resp
+      failure = (response) ->
+        # If this is an authentication fail, we trigger login to display, and
+        # then wait for it to succeed, at which point we replay the request and
+        # finally satisfy the original promise. Clever, right? 
+        console.log response
+        if response.status is 401 and not response.config.loginAttempt
+          console.log "hijackin'"
+          $http = $injector.get "$http"
+          deferred = $q.defer()
+          $rootScope.loggedIn = false
+          watchRegistration = $rootScope.$watch "loggedIn", (newVal, oldVal) ->
+            if newVal
+              deferred.resolve $http response.config
+          return deferred.promise
+        return $q.reject response
+      promise.then success, failure
+  )
+  .run ($rootScope, $http, Base64) ->
+    $rootScope.loggedIn = null
+    $rootScope.authentication = {}
+    $http.defaults.transformRequest = (data, headers) ->
+      if $rootScope.authentication.user and $rootScope.authentication.pass
+        headers().Authorization = "Basic #{Base64.encodeUtf8("#{$rootScope.authentication.user}:#{$rootScope.authentication.pass}")}"
+      return data
