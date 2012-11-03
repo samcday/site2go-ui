@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('site2goUiApp').controller('LoginCtrl', function($scope, $rootScope, $q, $http, Base64) {
+  angular.module('site2goUiApp').controller('LoginCtrl', function($scope, $rootScope, $http, Storage) {
     $scope.loginFailed = false;
     $scope.showLogin = false;
     $rootScope.$watch("loggedIn", function(newValue, oldValue) {
@@ -37,6 +37,7 @@
         loginAttempt: true
       });
       promise.success(function() {
+        Storage.set("authentication", $rootScope.authentication);
         return $rootScope.loggedIn = true;
       });
       return promise.error(function(data, status) {

@@ -1,7 +1,7 @@
 'use strict'
 
 angular.module('site2goUiApp')
-  .controller 'LoginCtrl', ($scope, $rootScope, $q, $http, Base64) ->
+  .controller 'LoginCtrl', ($scope, $rootScope, $http, Storage) ->
     $scope.loginFailed = false
     $scope.showLogin = false
     $rootScope.$watch "loggedIn", (newValue, oldValue) ->
@@ -32,6 +32,7 @@ angular.module('site2goUiApp')
 
       promise = $http.get "http://localhost:9090/", loginAttempt: true
       promise.success ->
+        Storage.set "authentication", $rootScope.authentication
         $rootScope.loggedIn = true
       promise.error (data, status) ->
         if status is 401

@@ -63,9 +63,18 @@
       };
       return promise.then(success, failure);
     };
-  }).run(function($rootScope, $http, Base64) {
+  }).factory("Storage", function() {
+    return {
+      get: function(key) {
+        return $.jStorage.get(key);
+      },
+      set: function(key, val) {
+        return $.jStorage.set(key, val);
+      }
+    };
+  }).run(function($rootScope, $http, Base64, Storage) {
     $rootScope.loggedIn = null;
-    $rootScope.authentication = {};
+    $rootScope.authentication = (Storage.get("authentication")) || {};
     return $http.defaults.transformRequest = function(data, headers) {
       if ($rootScope.authentication.user && $rootScope.authentication.pass) {
         headers().Authorization = "Basic " + (Base64.encodeUtf8("" + $rootScope.authentication.user + ":" + $rootScope.authentication.pass));

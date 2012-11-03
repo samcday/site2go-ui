@@ -54,9 +54,17 @@ angular.module('site2goUiApp', ['ui', 'ngResource'])
         return $q.reject response
       promise.then success, failure
   )
-  .run ($rootScope, $http, Base64) ->
+  .factory("Storage", ->
+    return {
+      get: (key) ->
+        $.jStorage.get key
+      set: (key, val) ->
+        $.jStorage.set key, val
+    }
+  )
+  .run ($rootScope, $http, Base64, Storage) ->
     $rootScope.loggedIn = null
-    $rootScope.authentication = {}
+    $rootScope.authentication = (Storage.get "authentication") or {}
     $http.defaults.transformRequest = (data, headers) ->
       if $rootScope.authentication.user and $rootScope.authentication.pass
         headers().Authorization = "Basic #{Base64.encodeUtf8("#{$rootScope.authentication.user}:#{$rootScope.authentication.pass}")}"
