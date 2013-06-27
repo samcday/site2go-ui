@@ -1,6 +1,10 @@
 /* Will be compiled down to a single stylesheet with your sass files */
 @import "compass_twitter_bootstrap";
 
+body {
+	padding-top: 40px;	
+}
+
 .hide {
 	display: none;
 }
